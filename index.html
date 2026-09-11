@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Pemanggil Nomor Meja</title>
+<title>SMPTRU JOSJIS</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17202a}
 header{background:#111827;color:white;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -32,7 +32,7 @@ button{cursor:pointer;background:#111827;color:white;border:0;font-weight:700}.b
 <button onclick="callTable()">🔔 Panggil</button>
 <button class="secondary" onclick="repeatCall()">↻ Panggil Ulang</button>
 <button class="secondary" onclick="nextTable()">▶ Berikutnya</button>
-<button class="reset" onclick="clearHistory()">Hapus Riwayat</button>
+<button class="danger" onclick="clearHistory()">Hapus Riwayat</button>
 </div>
 <div class="keypad">
 <button onclick="addNum(1)">1</button><button onclick="addNum(2)">2</button><button onclick="addNum(3)">3</button><button onclick="addNum(4)">4</button><button onclick="addNum(5)">5</button>
@@ -61,7 +61,8 @@ function callTable(){let n=parseInt(input.value);if(!n)return alert('Masukkan no
 function repeatCall(){if(current==null)return alert('Belum ada meja yang dipanggil.');speak(current)}
 function nextTable(){if(current==null){input.value=1}else input.value=current+1;callTable()}
 function addNum(n){input.value=(input.value||'')+n}
-function backspace(){input.value=input.value.slice(0,-1)}}
+function backspace(){input.value=input.value.slice(0,-1)}
+function clearHistory(){if(confirm('Hapus semua riwayat?')){history=[];save()}}
 render();
 </script>
 </body>
