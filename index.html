@@ -39,8 +39,8 @@ button{cursor:pointer;background:#111827;color:white;border:0;font-weight:700}.b
 </div>
 </section>
 <section class="card">
-<h2>MEJA YANG DIPANGGIL</h2>
-<div class="display"><div id="displayNumber" class="number">—</div><p id="displayText">Belum Ada Panggilan</p></div>
+<h2><center>MEJA YANG DIPANGGIL</center></h2>
+<div class="display"><div id="displayNumber" class="number">—</div><p id="displayText">Silakan menunggu pemanggilan meja</p></div>
 <h3>Riwayat Pemanggilan</h3>
 <div id="history" class="history"></div>
 </section>
@@ -51,9 +51,9 @@ let current=null, history=JSON.parse(localStorage.getItem('tableHistory')||'[]')
 const input=document.getElementById('tableInput');
 function save(){localStorage.setItem('tableHistory',JSON.stringify(history));render()}
 function render(){
- document.getElementById('displayNumber').textContent=current??'—';
- document.getElementById('displayText').textContent=current?`Panggilan meja ${current}`:'Silakan menunggu pemanggilan meja';
+ document.getElementById('displayText').textContent=current?`Panggilan meja ${current}`:'Belum Ada Panggilan Meja';
  document.getElementById('history').innerHTML=history.map(x=>`<div class="row"><b>MEJA ${x}</b><span class="badge">Dipanggil</span></div>`).join('')||'<div class="label">Belum ada riwayat.</div>';
+ document.getElementById('displayNumber').textContent=current??'—';
 }
 function speak(n){if('speechSynthesis'in window){speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(`Meja nomor ${n}, silakan ambil pesanan anda.`);u.lang='id-ID';u.rate=.9;speechSynthesis.speak(u)}}
 function callTable(){let n=parseInt(input.value);if(!n)return alert('Masukkan nomor meja.');current=n;history=[n,...history.filter(x=>x!==n)].slice(0,30);save();speak(n)}
