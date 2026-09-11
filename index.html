@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SMPTRU JOSJIS</title>
+<title>SMPTRU</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17202a}
 header{background:#111827;color:white;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -21,18 +21,17 @@ button{cursor:pointer;background:#111827;color:white;border:0;font-weight:700}.b
 </style>
 </head>
 <body>
-<header><h1>🔔 SUMENEP JOS JIS</h1></header>
+<header><h1>🔔 SUMENEP TRUNOJOYO</h1></header>
 <div class="wrap">
 <div class="grid">
 <section class="card">
-<h2>SUMENEP TRUNOJOYO</h2>
-<label class="label">Nomor meja</label>
+<h2>SMPTRU JOS JIS</h2>
 <input id="tableInput" type="number" min="1" max="999" placeholder="Contoh: 12">
 <div class="btns">
 <button onclick="callTable()">🔔 Panggil</button>
 <button class="secondary" onclick="repeatCall()">↻ Panggil Ulang</button>
-<button class="#" onclick="#">SMPTRU !</button>
-<button class="secondary" onclick="backspace()">Hapus Angka</button>
+<button class="secondary" onclick="nextTable()">▶ Berikutnya</button>
+<button class="danger" onclick="clearHistory()">Hapus Riwayat</button>
 </div>
 <div class="keypad">
 <button onclick="addNum(1)">1</button><button onclick="addNum(2)">2</button><button onclick="addNum(3)">3</button><button onclick="addNum(4)">4</button><button onclick="addNum(5)">5</button>
@@ -40,7 +39,10 @@ button{cursor:pointer;background:#111827;color:white;border:0;font-weight:700}.b
 </div>
 </section>
 <section class="card">
-<div class="display"><div class="label">MEJA YANG DIPANGGIL</div><div id="displayNumber" class="number">—</div>
+<h2>MEJA YANG DIPANGGIL</h2>
+<div class="display"><div id="displayNumber" class="number">—</div><p id="displayText">Silakan menunggu pemanggilan meja</p></div>
+<h3>Riwayat Pemanggilan</h3>
+<div id="history" class="history"></div>
 </section>
 </div>
 </div>
@@ -50,10 +52,10 @@ const input=document.getElementById('tableInput');
 function save(){localStorage.setItem('tableHistory',JSON.stringify(history));render()}
 function render(){
  document.getElementById('displayNumber').textContent=current??'—';
- document.getElementById('displayText').textContent=current?`Silakan menuju meja ${current}`:'Silakan menunggu pemanggilan meja';
+ document.getElementById('displayText').textContent=current?`Panggilan meja ${current}`:'Silakan menunggu pemanggilan meja';
  document.getElementById('history').innerHTML=history.map(x=>`<div class="row"><b>MEJA ${x}</b><span class="badge">Dipanggil</span></div>`).join('')||'<div class="label">Belum ada riwayat.</div>';
 }
-function speak(n){if('speechSynthesis'in window){speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(`Meja nomor ${n}`);u.lang='id-ID';u.rate=.9;speechSynthesis.speak(u)}}
+function speak(n){if('speechSynthesis'in window){speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(`Meja nomor ${n}, silakan ambil pesanan anda.`);u.lang='id-ID';u.rate=.9;speechSynthesis.speak(u)}}
 function callTable(){let n=parseInt(input.value);if(!n)return alert('Masukkan nomor meja.');current=n;history=[n,...history.filter(x=>x!==n)].slice(0,30);save();speak(n)}
 function repeatCall(){if(current==null)return alert('Belum ada meja yang dipanggil.');speak(current)}
 function nextTable(){if(current==null){input.value=1}else input.value=current+1;callTable()}
