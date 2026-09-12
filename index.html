@@ -7,44 +7,45 @@
 <title>SMPTRU</title>
 <style>
 *{box-sizing:border-box}
-html,body{margin:0;min-height:100%;font-family:Arial,sans-serif;background:#000;color:#fff}
+html,body{margin:0;min-height:100%;font-family:Arial,sans-serif;background:#f5f6f8;color:#222}
 body{display:flex;justify-content:center}
-.app{width:100%;max-width:1100px;min-height:100vh;background:#000}
-header{padding:18px 22px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #222}
+.app{width:100%;max-width:1100px;min-height:100vh;background:#f5f6f8}
+header{padding:18px 22px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #ddd}
 .logo{font-size:20px;font-weight:800}
-.status{font-size:12px;color:#aaa}
+.status{font-size:12px;color:#666}
 main{display:grid;grid-template-columns:1fr 1.15fr;gap:18px;padding:18px}
-.card{background:#111;border:1px solid #222;border-radius:22px;padding:20px}
+.card{background:#fff;border:1px solid #ddd;border-radius:22px;padding:20px}
 .title{text-align:center;margin:0 0 16px;font-size:19px}
 .input-wrap{position:relative}
-input{width:100%;height:68px;background:#050505;border:1px solid #333;border-radius:16px;color:#fff;text-align:center;font-size:38px;font-weight:700;outline:none}
-input::placeholder{color:#555;font-size:18px}
+input{width:100%;height:68px;background:#fff;border:1px solid #ccc;border-radius:16px;color:#222;text-align:center;font-size:38px;font-weight:700;outline:none}
+input::placeholder{color:#999;font-size:18px}
 .actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
 button{font:inherit;border:0;border-radius:14px;padding:13px;cursor:pointer;font-weight:700}
-.call{background:#fff;color:#000}
-.repeat{background:#272727;color:#fff}
-.clear{background:#272727;color:#fff}
+.actions button{height:82px}
+.call{background:#22c55e;color:#fff}
+.repeat{background:#e9ecef;color:#222}
+.clear{background:#e9ecef;color:#222}
 .reset{background:#8b1e1e;color:#fff}
 .keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:15px}
-.key{height:94px;background:#000;color:#fff;border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;border:0}
-.key:hover{background:#181818}
-.key:active{transform:scale(.95);background:#222}
+.key{height:94px;background:#f5f6f8;color:#222;border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;border:0}
+.key:hover{background:#eef0f2}
+.key:active{transform:scale(.95);background:#e2e5e8}
 .num{font-size:43px;font-weight:400;line-height:43px}
 .letters{font-size:14px;color:#777;margin-top:3px;letter-spacing:1px;min-height:16px}
 .special .num{font-size:39px}
-.display{background:#050505;border:1px solid #292929;border-radius:20px;text-align:center;padding:25px 15px;margin-bottom:18px}
-.display-label{color:#888;font-size:13px}
+.display{background:#f8f9fa;border:1px solid #ddd;border-radius:20px;text-align:center;padding:25px 15px;margin-bottom:18px}
+.display-label{color:#666;font-size:13px}
 .display-number{font-size:105px;line-height:1;font-weight:800;margin:10px 0}
-.display-text{color:#ccc;min-height:20px}
+.display-text{color:#555;min-height:20px}
 .history-title{display:flex;justify-content:space-between;align-items:center}
 .history-title h3{margin:0}
 .history-list{max-height:300px;overflow:auto;margin-top:8px}
-.row{display:flex;justify-content:space-between;align-items:center;padding:13px 4px;border-bottom:1px solid #252525}
+.row{display:flex;justify-content:space-between;align-items:center;padding:13px 4px;border-bottom:1px solid #e5e5e5}
 .badge{font-size:11px;color:#8ee6a0}
-.empty{color:#666;text-align:center;padding:20px}
+.empty{color:#888;text-align:center;padding:20px}
 .flash{animation:flash .5s ease 2}
-@keyframes flash{50%{background:#333}}
-.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);background:#fff;color:#000;padding:12px 18px;border-radius:99px;font-weight:700;opacity:0;pointer-events:none;transition:.25s;z-index:5}
+@keyframes flash{50%{background:#e9ecef}}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);background:#222;color:#fff;padding:12px 18px;border-radius:99px;font-weight:700;opacity:0;pointer-events:none;transition:.25s;z-index:5}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 @media(max-width:750px){
  main{grid-template-columns:1fr;padding:10px}
@@ -73,8 +74,6 @@ button{font:inherit;border:0;border-radius:14px;padding:13px;cursor:pointer;font
   <div class="actions">
     <button class="repeat" onclick="repeatCall()">↻ PANGGIL ULANG</button>
     <button class="call" onclick="callTable()">🔔 PANGGIL MEJA</button>
-    <button class="reset" onclick="resetAll()">RESET DATA</button>
-    <button class="#" onclick="#">SEMANGAT YA 💪</button>
   </div>
 
   <div class="keypad">
@@ -87,9 +86,9 @@ button{font:inherit;border:0;border-radius:14px;padding:13px;cursor:pointer;font
     <button class="key" onclick="addNum(7)"><span class="num">7</span></button>
     <button class="key" onclick="addNum(8)"><span class="num">8</span></button>
     <button class="key" onclick="addNum(9)"><span class="num">9</span></button>
-    <button class="key special" onclick="clearInput()"><span class="num"></span><span class="letters"></span></button>
+    <button class="key special" onclick="backspace()" aria-label="Hapus satu digit"><span class="num">⌫</span><span class="letters">HAPUS</span></button>
     <button class="key" onclick="addNum(0)"><span class="num">0</span><span class="letters"></span></button>
-    <button class="key special" onclick="callTable()"><span class="num"></span><span class="etters"></span></button>
+    <button class="key special" onclick="resetAll()" aria-label="Riset data"><span class="num">↻</span><span class="letters">RISET DATA</span></button>
   </div>
 </section>
 
@@ -169,33 +168,76 @@ function speak(n){
 
   speechSynthesis.cancel();
 
-  // Bunyi notifikasi singkat menggunakan Web Audio
+  // Bel rumah elektronik yang lebih "nyala", tegas, dan keras.
   try{
     const AudioContext=window.AudioContext||window.webkitAudioContext;
     if(AudioContext){
       const ctx=new AudioContext();
-      const osc=ctx.createOscillator();
-      const gain=ctx.createGain();
-      osc.frequency.value=880;
-      gain.gain.value=.07;
-      osc.connect(gain); gain.connect(ctx.destination);
-      osc.start();
-      osc.stop(ctx.currentTime+.18);
+
+      const doorbellTone=(baseFreq, delay, duration, peak)=>{
+        const t=ctx.currentTime+delay;
+
+        const master=ctx.createGain();
+        const compressor=ctx.createDynamicsCompressor();
+        compressor.threshold.setValueAtTime(-18,t);
+        compressor.knee.setValueAtTime(8,t);
+        compressor.ratio.setValueAtTime(8,t);
+        compressor.attack.setValueAtTime(0.003,t);
+        compressor.release.setValueAtTime(0.15,t);
+
+        const filter=ctx.createBiquadFilter();
+        filter.type='peaking';
+        filter.frequency.setValueAtTime(2300,t);
+        filter.Q.setValueAtTime(1.1,t);
+        filter.gain.setValueAtTime(5,t);
+
+        master.gain.setValueAtTime(0.0001,t);
+        master.gain.exponentialRampToValueAtTime(peak,t+0.006);
+        master.gain.exponentialRampToValueAtTime(peak*0.62,t+0.10);
+        master.gain.exponentialRampToValueAtTime(peak*0.28,t+0.32);
+        master.gain.exponentialRampToValueAtTime(0.0001,t+duration);
+
+        filter.connect(master);
+        master.connect(compressor);
+        compressor.connect(ctx.destination);
+
+        [
+          [1,0.62],
+          [2.01,0.25],
+          [3.02,0.11],
+          [4.05,0.055],
+          [5.08,0.025]
+        ].forEach(([ratio,amp])=>{
+          const osc=ctx.createOscillator();
+          const gain=ctx.createGain();
+          osc.type='sine';
+          osc.frequency.setValueAtTime(baseFreq*ratio,t);
+          gain.gain.setValueAtTime(amp,t);
+          osc.connect(gain);
+          gain.connect(filter);
+          osc.start(t);
+          osc.stop(t+duration+0.08);
+        });
+      };
+
+      // Ting-tung lebih terang dan keras seperti doorbell rumah.
+      doorbellTone(1046.5,0,0.78,1.35);
+      doorbellTone(783.99,0.28,1.05,1.35);
     }
   }catch(e){}
 
+  // Jeda pendek agar bel dan suara tidak terasa terpisah.
   setTimeout(()=>{
     const u=new SpeechSynthesisUtterance(
-      `Meja ${n}, silahkan ambil pesanan anda.`
+      `Meja ${n}, silakan ambil pesanan Anda.`
     );
     u.lang='id-ID';
-    u.rate=.88;
+    u.rate=1.05;
     u.pitch=1;
     u.volume=1;
     speechSynthesis.speak(u);
-  },220);
+  },950);
 }
-
 function callTable(){
   const n=parseInt(input.value,10);
 
@@ -245,5 +287,4 @@ input.addEventListener('keydown',e=>{
 render();
 </script>
 </body>
-</html></body>
 </html>
