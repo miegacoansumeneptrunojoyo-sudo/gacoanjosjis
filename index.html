@@ -55,12 +55,58 @@ button{font:inherit;border:0;border-radius:14px;padding:13px;cursor:pointer;font
  .key{height:82px}
  .num{font-size:38px}
 }
+
+/* === TEMA DARK / TERANG: tambahan saja, tidak mengubah fungsi aplikasi === */
+.theme-toggle{
+  min-width:118px;
+  height:44px;
+  padding:8px 14px;
+  border:1px solid #ccc;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-weight:700;
+  font-size:13px;
+  cursor:pointer;
+  transition:.2s;
+}
+.theme-toggle:hover{opacity:.88}
+body.dark-mode,
+body.dark-mode .app{
+  background:#111827;
+  color:#f3f4f6;
+}
+body.dark-mode header{border-bottom-color:#374151}
+body.dark-mode .status{color:#9ca3af}
+body.dark-mode .card{background:#1f2937;border-color:#374151}
+body.dark-mode input{background:#111827;border-color:#4b5563;color:#f3f4f6}
+body.dark-mode input::placeholder{color:#9ca3af}
+body.dark-mode .repeat,
+body.dark-mode .clear{background:#374151;color:#f3f4f6}
+body.dark-mode .key{background:#374151;color:#f3f4f6}
+body.dark-mode .key:hover{background:#4b5563}
+body.dark-mode .key:active{background:#6b7280}
+body.dark-mode .letters{color:#9ca3af}
+body.dark-mode .display{background:#111827;border-color:#374151}
+body.dark-mode .display-label,
+body.dark-mode .display-text{color:#9ca3af}
+body.dark-mode .row{border-bottom-color:#374151}
+body.dark-mode .empty{color:#9ca3af}
+body.dark-mode .theme-toggle{
+  background:#374151;
+  border-color:#4b5563;
+  color:#f9fafb;
+}
+@media(max-width:750px){
+  .theme-toggle{min-width:104px;height:40px;font-size:12px;padding:7px 10px}
+}
 </style>
 </head>
 <body>
 <div class="app">
 <header>
   <div class="logo">🔔 SMPTRU JOS JIS</div>
+  <button id="themeToggle" class="theme-toggle" type="button" onclick="toggleTheme()" aria-label="Ganti mode tampilan">🌙 DARK</button>
 </header>
 
 <main>
@@ -285,6 +331,32 @@ input.addEventListener('keydown',e=>{
 });
 
 render();
+
+/* === TEMA DARK / TERANG: tambahan saja === */
+(function(){
+  const savedTheme = localStorage.getItem('smptruTheme');
+  if(savedTheme === 'dark') document.body.classList.add('dark-mode');
+
+  window.updateThemeButton = function(){
+    const btn = document.getElementById('themeToggle');
+    if(!btn) return;
+    const dark = document.body.classList.contains('dark-mode');
+    btn.textContent = dark ? '☀️ TERANG' : '🌙 DARK';
+    btn.setAttribute('aria-label', dark ? 'Gunakan mode terang' : 'Gunakan mode gelap');
+  };
+
+  window.toggleTheme = function(){
+    document.body.classList.toggle('dark-mode');
+    localStorage.setItem(
+      'smptruTheme',
+      document.body.classList.contains('dark-mode') ? 'dark' : 'light'
+    );
+    updateThemeButton();
+  };
+
+  updateThemeButton();
+})();
+
 </script>
 </body>
 </html>
