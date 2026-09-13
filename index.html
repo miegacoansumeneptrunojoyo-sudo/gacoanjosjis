@@ -24,6 +24,7 @@ button{font:inherit;border:0;border-radius:14px;padding:13px;cursor:pointer;font
 .actions button{height:82px}
 .call{background:#22c55e;color:#fff}
 .repeat{background:#e9ecef;color:#222}
+.extra{background:#f59e0b;color:#fff;grid-column:1 / -1;height:64px}
 .clear{background:#e9ecef;color:#222}
 .reset{background:#8b1e1e;color:#fff}
 .keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:15px}
@@ -56,49 +57,31 @@ button{font:inherit;border:0;border-radius:14px;padding:13px;cursor:pointer;font
  .num{font-size:38px}
 }
 
-/* === TEMA DARK / TERANG: tambahan saja, tidak mengubah fungsi aplikasi === */
+/* === TEMA DARK / TERANG === */
 .theme-toggle{
-  min-width:118px;
-  height:44px;
-  padding:8px 14px;
-  border:1px solid #ccc;
-  border-radius:12px;
-  background:#fff;
-  color:#222;
-  font-weight:700;
-  font-size:13px;
-  cursor:pointer;
-  transition:.2s;
+  min-width:118px;height:44px;padding:8px 14px;border:1px solid #ccc;
+  border-radius:12px;background:#fff;color:#222;font-weight:700;font-size:13px;
+  cursor:pointer;transition:.2s;
 }
 .theme-toggle:hover{opacity:.88}
-body.dark-mode,
-body.dark-mode .app{
-  background:#111827;
-  color:#f3f4f6;
-}
+body.dark-mode,body.dark-mode .app{background:#111827;color:#f3f4f6}
 body.dark-mode header{border-bottom-color:#374151}
 body.dark-mode .status{color:#9ca3af}
 body.dark-mode .card{background:#1f2937;border-color:#374151}
 body.dark-mode input{background:#111827;border-color:#4b5563;color:#f3f4f6}
 body.dark-mode input::placeholder{color:#9ca3af}
-body.dark-mode .repeat,
-body.dark-mode .clear{background:#374151;color:#f3f4f6}
+body.dark-mode .repeat,body.dark-mode .clear{background:#374151;color:#f3f4f6}
 body.dark-mode .key{background:#374151;color:#f3f4f6}
 body.dark-mode .key:hover{background:#4b5563}
 body.dark-mode .key:active{background:#6b7280}
 body.dark-mode .letters{color:#9ca3af}
 body.dark-mode .display{background:#111827;border-color:#374151}
-body.dark-mode .display-label,
-body.dark-mode .display-text{color:#9ca3af}
+body.dark-mode .display-label,body.dark-mode .display-text{color:#9ca3af}
 body.dark-mode .row{border-bottom-color:#374151}
 body.dark-mode .empty{color:#9ca3af}
-body.dark-mode .theme-toggle{
-  background:#374151;
-  border-color:#4b5563;
-  color:#f9fafb;
-}
+body.dark-mode .theme-toggle{background:#374151;border-color:#4b5563;color:#f9fafb}
 @media(max-width:750px){
-  .theme-toggle{min-width:104px;height:40px;font-size:12px;padding:7px 10px}
+ .theme-toggle{min-width:104px;height:40px;font-size:12px;padding:7px 10px}
 }
 </style>
 </head>
@@ -111,7 +94,7 @@ body.dark-mode .theme-toggle{
 
 <main>
 <section class="card">
-  <h1 class="title">GAK ADA GEBRAKAN, KITA GEBRAKIN😋</h1>
+  <h1 class="title">TIDAK ADA GEBRAKAN,</h1><p><h1 class="title">KITA GEBRAKIN SENDIRI😋</h1>
   <div class="input-wrap">
     <input id="tableInput" type="text" inputmode="numeric" maxlength="3"
            placeholder="Masukkan Nomor Meja" autocomplete="off">
@@ -120,6 +103,7 @@ body.dark-mode .theme-toggle{
   <div class="actions">
     <button class="repeat" onclick="repeatCall()">↻ PANGGIL ULANG</button>
     <button class="call" onclick="callTable()">🔔 PANGGIL MEJA</button>
+    <button class="extra" onclick="extraMenuCall()">🍽️ TAMBAHAN MENU</button>
   </div>
 
   <div class="keypad">
@@ -132,9 +116,9 @@ body.dark-mode .theme-toggle{
     <button class="key" onclick="addNum(7)"><span class="num">7</span></button>
     <button class="key" onclick="addNum(8)"><span class="num">8</span></button>
     <button class="key" onclick="addNum(9)"><span class="num">9</span></button>
-    <button class="key special" onclick="backspace()" aria-label="Hapus satu digit"><span class="num">⌫</span><span class="letters">HAPUS</span></button>
-    <button class="key" onclick="addNum(0)"><span class="num">0</span><span class="letters"></span></button>
     <button class="key special" onclick="resetAll()" aria-label="Riset data"><span class="num">↻</span><span class="letters">RISET DATA</span></button>
+    <button class="key" onclick="addNum(0)"><span class="num">0</span><span class="letters"></span></button>
+    <button class="key special" onclick="backspace()" aria-label="Hapus satu digit"><span class="num">⌫</span><span class="letters">HAPUS</span></button>
   </div>
 </section>
 
@@ -206,7 +190,52 @@ function showToast(text){
   setTimeout(()=>toast.classList.remove('show'),1800);
 }
 
-function speak(n){
+function playDoorbell(){
+  try{
+    const AudioContext=window.AudioContext||window.webkitAudioContext;
+    if(!AudioContext) return;
+
+    const ctx=new AudioContext();
+
+    const doorbellTone=(baseFreq, delay, duration, peak)=>{
+      const t=ctx.currentTime+delay;
+      const master=ctx.createGain();
+      const compressor=ctx.createDynamicsCompressor();
+
+      compressor.threshold.setValueAtTime(-18,t);
+      compressor.knee.setValueAtTime(8,t);
+      compressor.ratio.setValueAtTime(8,t);
+      compressor.attack.setValueAtTime(0.003,t);
+      compressor.release.setValueAtTime(0.15,t);
+
+      master.gain.setValueAtTime(0.0001,t);
+      master.gain.exponentialRampToValueAtTime(peak,t+0.006);
+      master.gain.exponentialRampToValueAtTime(peak*0.62,t+0.10);
+      master.gain.exponentialRampToValueAtTime(peak*0.28,t+0.32);
+      master.gain.exponentialRampToValueAtTime(0.0001,t+duration);
+
+      master.connect(compressor);
+      compressor.connect(ctx.destination);
+
+      [[1,0.62],[2.01,0.25],[3.02,0.11],[4.05,0.055],[5.08,0.025]].forEach(([ratio,amp])=>{
+        const osc=ctx.createOscillator();
+        const gain=ctx.createGain();
+        osc.type='sine';
+        osc.frequency.setValueAtTime(baseFreq*ratio,t);
+        gain.gain.setValueAtTime(amp,t);
+        osc.connect(gain);
+        gain.connect(master);
+        osc.start(t);
+        osc.stop(t+duration+0.08);
+      });
+    };
+
+    doorbellTone(1046.5,0,0.78,1.35);
+    doorbellTone(783.99,0.28,1.05,1.35);
+  }catch(e){}
+}
+
+function speakText(text){
   if(!('speechSynthesis' in window)){
     showToast('Browser tidak mendukung suara otomatis');
     return;
@@ -214,69 +243,8 @@ function speak(n){
 
   speechSynthesis.cancel();
 
-  // Bel rumah elektronik yang lebih "nyala", tegas, dan keras.
-  try{
-    const AudioContext=window.AudioContext||window.webkitAudioContext;
-    if(AudioContext){
-      const ctx=new AudioContext();
-
-      const doorbellTone=(baseFreq, delay, duration, peak)=>{
-        const t=ctx.currentTime+delay;
-
-        const master=ctx.createGain();
-        const compressor=ctx.createDynamicsCompressor();
-        compressor.threshold.setValueAtTime(-18,t);
-        compressor.knee.setValueAtTime(8,t);
-        compressor.ratio.setValueAtTime(8,t);
-        compressor.attack.setValueAtTime(0.003,t);
-        compressor.release.setValueAtTime(0.15,t);
-
-        const filter=ctx.createBiquadFilter();
-        filter.type='peaking';
-        filter.frequency.setValueAtTime(2300,t);
-        filter.Q.setValueAtTime(1.1,t);
-        filter.gain.setValueAtTime(5,t);
-
-        master.gain.setValueAtTime(0.0001,t);
-        master.gain.exponentialRampToValueAtTime(peak,t+0.006);
-        master.gain.exponentialRampToValueAtTime(peak*0.62,t+0.10);
-        master.gain.exponentialRampToValueAtTime(peak*0.28,t+0.32);
-        master.gain.exponentialRampToValueAtTime(0.0001,t+duration);
-
-        filter.connect(master);
-        master.connect(compressor);
-        compressor.connect(ctx.destination);
-
-        [
-          [1,0.62],
-          [2.01,0.25],
-          [3.02,0.11],
-          [4.05,0.055],
-          [5.08,0.025]
-        ].forEach(([ratio,amp])=>{
-          const osc=ctx.createOscillator();
-          const gain=ctx.createGain();
-          osc.type='sine';
-          osc.frequency.setValueAtTime(baseFreq*ratio,t);
-          gain.gain.setValueAtTime(amp,t);
-          osc.connect(gain);
-          gain.connect(filter);
-          osc.start(t);
-          osc.stop(t+duration+0.08);
-        });
-      };
-
-      // Ting-tung lebih terang dan keras seperti doorbell rumah.
-      doorbellTone(1046.5,0,0.78,1.35);
-      doorbellTone(783.99,0.28,1.05,1.35);
-    }
-  }catch(e){}
-
-  // Jeda pendek agar bel dan suara tidak terasa terpisah.
   setTimeout(()=>{
-    const u=new SpeechSynthesisUtterance(
-      `Meja ${n}, silakan ambil pesanan Anda.`
-    );
+    const u=new SpeechSynthesisUtterance(text);
     u.lang='id-ID';
     u.rate=1.05;
     u.pitch=1;
@@ -284,6 +252,36 @@ function speak(n){
     speechSynthesis.speak(u);
   },950);
 }
+
+function speak(n){
+  playDoorbell();
+  speakText(`Meja ${n}, silakan ambil pesanan Anda.`);
+}
+
+function extraMenuCall(){
+  // Bisa langsung menggunakan nomor yang baru diinput,
+  // atau menggunakan nomor meja aktif jika input kosong.
+  const typed = parseInt(input.value,10);
+  const n = typed && typed >= 1 && typed <= 999 ? String(typed) : current;
+
+  if(!n){
+    showToast('Masukkan nomor meja terlebih dahulu');
+    return;
+  }
+
+  // Jika nomor baru diinput, jadikan sebagai meja aktif.
+  if(typed){
+    current = n;
+    localStorage.setItem('currentTable', current);
+    render();
+    input.value='';
+  }
+
+  playDoorbell();
+  speakText(`Tambahan meja ${n}. Silahkan Ambil Pesanan Anda!`);
+  showToast('Tambahan meja '+n);
+}
+
 function callTable(){
   const n=parseInt(input.value,10);
 
@@ -332,7 +330,7 @@ input.addEventListener('keydown',e=>{
 
 render();
 
-/* === TEMA DARK / TERANG: tambahan saja === */
+/* === TEMA DARK / TERANG === */
 (function(){
   const savedTheme = localStorage.getItem('smptruTheme');
   if(savedTheme === 'dark') document.body.classList.add('dark-mode');
@@ -356,7 +354,6 @@ render();
 
   updateThemeButton();
 })();
-
 </script>
 </body>
 </html>
