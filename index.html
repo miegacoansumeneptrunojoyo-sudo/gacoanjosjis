@@ -264,7 +264,7 @@ function extraMenuCall(){
   // Bisa langsung menggunakan nomor yang baru diinput,
   // atau menggunakan nomor meja aktif jika input kosong.
   const typed = parseInt(input.value,10);
-  const n = typed && typed >= 1 && typed <= 999 ? String(typed) : current;
+  const n = typed && typed >= 1 && typed <= 80 ? String(typed) : current;
 
   if(!n){
     showToast('Masukkan nomor meja terlebih dahulu');
@@ -327,7 +327,7 @@ function callTable(){
   const n=parseInt(input.value,10);
 
   if(!n || n<1 || n>999){
-    showToast('Masukkan nomor meja 1 - 999');
+    showToast('Masukkan nomor meja 1 - 80');
     return;
   }
 
