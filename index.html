@@ -88,13 +88,15 @@ body.dark-mode .theme-toggle{background:#374151;border-color:#4b5563;color:#f9fa
 <body>
 <div class="app">
 <header>
-  <div class="logo">🔔 SMPTRU JOS JIS</div>
+  <div>
+    <div class="logo">🔔 SMPTRU JOS JIS</div>
+  </div>
   <button id="themeToggle" class="theme-toggle" type="button" onclick="toggleTheme()" aria-label="Ganti mode tampilan">🌙 DARK</button>
 </header>
 
 <main>
 <section class="card">
-  <h1 class="title">GA ADA GEBRAKAN, KITA GEBRAKIN😋</h1>
+  <h1 class="title">GAK ADA GEBRAKAN, KITA GEBRAKIN😋</h1>
   <div class="input-wrap">
     <input id="tableInput" type="text" inputmode="numeric" maxlength="3"
            placeholder="Masukkan Nomor Meja" autocomplete="off">
@@ -116,9 +118,9 @@ body.dark-mode .theme-toggle{background:#374151;border-color:#4b5563;color:#f9fa
     <button class="key" onclick="addNum(7)"><span class="num">7</span></button>
     <button class="key" onclick="addNum(8)"><span class="num">8</span></button>
     <button class="key" onclick="addNum(9)"><span class="num">9</span></button>
-    <button class="key special" onclick="resetAll()" aria-label="Riset data"><span class="num">↻</span><span class="letters">RISET DATA</span></button>
-    <button class="key" onclick="addNum(0)"><span class="num">0</span><span class="letters"></span></button>
     <button class="key special" onclick="backspace()" aria-label="Hapus satu digit"><span class="num">⌫</span><span class="letters">HAPUS</span></button>
+    <button class="key" onclick="addNum(0)"><span class="num">0</span><span class="letters"></span></button>
+    <button class="key special" onclick="resetAll()" aria-label="Riset data"><span class="num">↻</span><span class="letters">RISET DATA</span></button>
   </div>
 </section>
 
@@ -278,9 +280,48 @@ function extraMenuCall(){
   }
 
   playDoorbell();
-  speakText(`Tambahan meja ${n}. Silahkan Ambil Pesanan Anda!`);
-  showToast('Tambahan meja '+n);
+  speakText(`Tambahan menu meja ${n}.`);
+  showToast('Tambahan menu meja '+n);
 }
+
+/* === PERINGATAN CLOSE ORDER 5 MENIT SEBELUM 23:00 === */
+let closeOrderLastAlert = localStorage.getItem('closeOrderLastAlert') || '';
+
+function closeOrderAlert(){
+  const now = new Date();
+  const hh = now.getHours();
+  const mm = now.getMinutes();
+  const today = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`;
+
+  // Hanya aktif tepat pada pukul 22:55 dan hanya sekali per hari.
+  if(hh === 22 && mm === 55 && closeOrderLastAlert !== today){
+    closeOrderLastAlert = today;
+    localStorage.setItem('closeOrderLastAlert', today);
+
+    const text = 'Perhatian. Lima menit lagi close order. Segera lakukan pembayaran pesanan anda, terimakasih';
+    showToast('⚠️ 5 MENIT LAGI CLOSE ORDER');
+
+    // Gunakan bel yang sama seperti panggilan meja.
+    playDoorbell();
+
+    // Suara pengumuman setelah bel.
+    setTimeout(()=>{
+      if('speechSynthesis' in window){
+        speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = 'id-ID';
+        u.rate = 1.0;
+        u.pitch = 1;
+        u.volume = 1;
+        speechSynthesis.speak(u);
+      }
+    }, 950);
+  }
+}
+
+// Cek setiap detik agar peringatan tetap muncul meskipun halaman sudah lama terbuka.
+setInterval(closeOrderAlert, 1000);
+closeOrderAlert();
 
 function callTable(){
   const n=parseInt(input.value,10);
