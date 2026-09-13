@@ -248,7 +248,7 @@ function speakText(text){
   setTimeout(()=>{
     const u=new SpeechSynthesisUtterance(text);
     u.lang='id-ID';
-    u.rate=1.0;
+    u.rate=0.8;
     u.pitch=1;
     u.volume=2;
     speechSynthesis.speak(u);
