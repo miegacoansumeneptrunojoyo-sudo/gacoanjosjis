@@ -237,7 +237,7 @@ function playDoorbell(){
   }catch(e){}
 }
 
-function speakText(text){
+function speakText(text, speed = 0.8){
   if(!('speechSynthesis' in window)){
     showToast('Browser tidak mendukung suara otomatis');
     return;
@@ -246,9 +246,9 @@ function speakText(text){
   speechSynthesis.cancel();
 
   setTimeout(()=>{
-    const u=new SpeechSynthesisUtterance(text);
+    const u = new SpeechSynthesisUtterance(text);
     u.lang='id-ID';
-    u.rate=0.8;
+    u.rate=speed;
     u.pitch=1;
     u.volume=2;
     speechSynthesis.speak(u);
@@ -257,7 +257,14 @@ function speakText(text){
 
 function speak(n){
   playDoorbell();
-  speakText(`Nomor Meja, ${n}`);
+
+  // "Nomor meja" speed 1
+  speakText(`Nomor meja`, 1.2);
+
+  // Jeda sedikit, lalu angka meja speed 0.8
+  setTimeout(()=>{
+    speakText(`${n}`, 0.8);
+  }, 700);
 }
 
 function extraMenuCall(){
