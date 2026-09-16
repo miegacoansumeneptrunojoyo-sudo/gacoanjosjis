@@ -84,8 +84,55 @@ const tone=(base,delay,duration)=>{const t=ctx.currentTime+delay,master=ctx.crea
 master.gain.setValueAtTime(.0001,t);master.gain.exponentialRampToValueAtTime(2.5,t+.006);master.gain.exponentialRampToValueAtTime(1.2,t+.10);master.gain.exponentialRampToValueAtTime(.55,t+.32);master.gain.exponentialRampToValueAtTime(.0001,t+duration);master.connect(comp);comp.connect(ctx.destination);
 [[1,.90],[2.01,.38],[3.02,.18],[4.05,.09],[5.08,.04]].forEach(([r,a])=>{const o=ctx.createOscillator(),g=ctx.createGain();o.type='sine';o.frequency.setValueAtTime(base*r,t);g.gain.setValueAtTime(a,t);o.connect(g);g.connect(master);o.start(t);o.stop(t+duration+.08)})};
 tone(1046.5,0,.78);tone(783.99,.28,1.05)}catch(e){console.log(e)}}
-function speakText(text,speed=.8){if(!('speechSynthesis'in window)){showToast('Browser tidak mendukung suara otomatis');return}speechSynthesis.cancel();setTimeout(()=>{const u=new SpeechSynthesisUtterance(text);u.lang='id-ID';u.rate=speed;u.pitch=1;u.volume=1;speechSynthesis.speak(u)},950)}
-function speak(n){playDoorbell();speakText('Nomor meja',1.2);setTimeout(()=>speakText(`${n}`,.8),700)}
+/*
+  SUARA KONSISTEN ANTAR DEVICE
+  Browser tidak mengizinkan website mengunci voice bawaan perangkat.
+  Karena itu, suara teks diatur dengan parameter tetap dan memilih voice
+  Bahasa Indonesia secara konsisten jika tersedia.
+*/
+let selectedVoice = null;
+
+function loadIndonesianVoice(){
+  if(!('speechSynthesis' in window)) return;
+  const voices = speechSynthesis.getVoices();
+  selectedVoice =
+    voices.find(v => v.lang && v.lang.toLowerCase() === 'id-id') ||
+    voices.find(v => v.lang && v.lang.toLowerCase().startsWith('id')) ||
+    null;
+}
+
+if('speechSynthesis' in window){
+  loadIndonesianVoice();
+  speechSynthesis.onvoiceschanged = loadIndonesianVoice;
+}
+
+function speakText(text, speed=.8){
+  if(!('speechSynthesis' in window)){
+    showToast('Browser tidak mendukung suara otomatis');
+    return;
+  }
+
+  speechSynthesis.cancel();
+
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'id-ID';
+  u.rate = speed;
+  u.pitch = 1;
+  u.volume = 1;
+
+  // Gunakan voice Indonesia yang tersedia di device.
+  // Jika voice tidak tersedia, browser memakai voice default untuk id-ID.
+  if(!selectedVoice) loadIndonesianVoice();
+  if(selectedVoice) u.voice = selectedVoice;
+
+  setTimeout(() => speechSynthesis.speak(u), 950);
+}
+
+function speak(n){
+  playDoorbell();
+  speakText('Nomor meja', 1.2);
+  setTimeout(() => speakText(`${n}`, .8), 700);
+}
 function extraMenuCall(){const typed=parseInt(input.value,10),n=typed&&typed>=1&&typed<=80?String(typed):current;if(!n){showToast('Masukkan nomor meja terlebih dahulu');return}if(typed){current=n;localStorage.setItem('currentTable',current);render();input.value=''}playDoorbell();speakText(`Tambahan meja ${n}.`);showToast('Tambahan meja '+n)}
 let closeOrderLastAlert=localStorage.getItem('closeOrderLastAlert')||'';
 function closeOrderAlert(){const now=new Date(),hh=now.getHours(),mm=now.getMinutes(),today=`${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`;if(hh===22&&mm===55&&closeOrderLastAlert!==today){closeOrderLastAlert=today;localStorage.setItem('closeOrderLastAlert',today);const text='Perhatian!!, kepada seluruh pelanggan mie gacoan sumenep, 5 menit lagi waktu pemesanan akan ditutup. Harap segera melakukan pembayaran atas pesanan Anda. Terima kasih';showToast('⚠️ 5 MENIT LAGI CLOSE ORDER');playDoorbell();setTimeout(()=>{if('speechSynthesis'in window){speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='id-ID';u.rate=1;u.pitch=1;u.volume=1;speechSynthesis.speak(u)}},950)}}
