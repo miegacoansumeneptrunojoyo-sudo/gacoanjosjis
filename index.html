@@ -1,147 +1,705 @@
 <!doctype html>
 <html lang="id">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<meta name="theme-color" content="#000000">
-<title>SMPTRU</title>
-<style>
-*{box-sizing:border-box}
-html,body{margin:0;min-height:100%;font-family:Arial,sans-serif;background:#f5f6f8;color:#222}
-body{display:flex;justify-content:center}.app{width:100%;max-width:1100px;min-height:100vh;background:#f5f6f8}
-header{padding:18px 22px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #ddd}
-.logo{font-size:20px;font-weight:800}.status{font-size:12px;color:#666}
-main{display:grid;grid-template-columns:1fr 1.15fr;gap:18px;padding:18px}
-.card{background:#fff;border:1px solid #ddd;border-radius:22px;padding:20px}.title{text-align:center;margin:0 0 16px;font-size:19px}
-input{width:100%;height:68px;background:#fff;border:1px solid #ccc;border-radius:16px;color:#222;text-align:center;font-size:38px;font-weight:700;outline:none}
-input::placeholder{color:#999;font-size:18px}.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
-button{font:inherit;border:0;border-radius:14px;padding:13px;cursor:pointer;font-weight:700;-webkit-tap-highlight-color:transparent}
-.actions button{height:82px}.call{background:#22c55e;color:#fff}.repeat{background:#e9ecef;color:#222}
-.extra{background:#f59e0b;color:#fff;grid-column:1/-1;height:64px!important}
-.keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:15px}
-.key{height:94px;background:#f5f6f8;color:#222;border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.key:hover{background:#eef0f2}.key:active{transform:scale(.95);background:#e2e5e8}
-.num{font-size:43px;font-weight:400;line-height:43px}.letters{font-size:14px;color:#777;margin-top:3px;letter-spacing:1px;min-height:16px}
-.special .num{font-size:39px}.display{background:#f8f9fa;border:1px solid #ddd;border-radius:20px;text-align:center;padding:25px 15px;margin-bottom:18px}
-.display-label{color:#666;font-size:13px}.display-number{font-size:105px;line-height:1;font-weight:800;margin:10px 0}.display-text{color:#555;min-height:20px}
-.history-title{display:flex;justify-content:space-between;align-items:center}.history-title h3{margin:0}
-.history-list{max-height:300px;overflow:auto;margin-top:8px}.row{display:flex;justify-content:space-between;align-items:center;padding:13px 4px;border-bottom:1px solid #e5e5e5}
-.badge{font-size:11px;color:#16a34a}.empty{color:#888;text-align:center;padding:20px}.flash{animation:flash .5s ease 2}
-@keyframes flash{50%{background:#e9ecef}}.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);background:#222;color:#fff;padding:12px 18px;border-radius:99px;font-weight:700;opacity:0;pointer-events:none;transition:.25s;z-index:5}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-.theme-toggle{min-width:118px;height:44px;padding:8px 14px;border:1px solid #ccc;border-radius:12px;background:#fff;color:#222;font-weight:700;font-size:13px}
-body.dark-mode,body.dark-mode .app{background:#111827;color:#f3f4f6}body.dark-mode header{border-bottom-color:#374151}
-body.dark-mode .status{color:#9ca3af}body.dark-mode .card{background:#1f2937;border-color:#374151}
-body.dark-mode input{background:#111827;border-color:#4b5563;color:#f3f4f6}body.dark-mode input::placeholder{color:#9ca3af}
-body.dark-mode .repeat{background:#374151;color:#f3f4f6}body.dark-mode .key{background:#374151;color:#f3f4f6}
-body.dark-mode .key:hover{background:#4b5563}body.dark-mode .key:active{background:#6b7280}
-body.dark-mode .letters{color:#9ca3af}body.dark-mode .display{background:#111827;border-color:#374151}
-body.dark-mode .display-label,body.dark-mode .display-text{color:#9ca3af}body.dark-mode .row{border-bottom-color:#374151}
-body.dark-mode .empty{color:#9ca3af}body.dark-mode .theme-toggle{background:#374151;border-color:#4b5563;color:#f9fafb}
-@media(max-width:750px){main{grid-template-columns:1fr;padding:10px}header{padding:15px}.card{padding:15px}.display-number{font-size:82px}.key{height:82px}.num{font-size:38px}.theme-toggle{min-width:104px;height:40px;font-size:12px;padding:7px 10px}}
-</style>
-</head>
-<body>
-<div class="app">
-<header><div><div class="logo">🔔 SMPTRU JOS JIS</div></div>
-<button id="themeToggle" class="theme-toggle" type="button" onclick="toggleTheme()">🌙 DARK</button></header>
-<main>
-<section class="card">
-<h2 class="title">GAK ADA GEBRAKAN, KITA GEBRAKIN😋</h2>
-<input id="tableInput" type="text" inputmode="numeric" maxlength="3" placeholder="Masukkan Nomor Meja" autocomplete="off">
-<div class="actions">
-<button class="repeat" onclick="repeatCall()">↻ PANGGIL ULANG</button>
-<button class="call" onclick="callTable()">🔔 PANGGIL MEJA</button>
-<button class="extra" onclick="extraMenuCall()">🍽️ TAMBAHAN MENU</button>
-</div>
-<div class="keypad">
-<button class="key" onclick="addNum(1)"><span class="num">1</span></button><button class="key" onclick="addNum(2)"><span class="num">2</span></button><button class="key" onclick="addNum(3)"><span class="num">3</span></button>
-<button class="key" onclick="addNum(4)"><span class="num">4</span></button><button class="key" onclick="addNum(5)"><span class="num">5</span></button><button class="key" onclick="addNum(6)"><span class="num">6</span></button>
-<button class="key" onclick="addNum(7)"><span class="num">7</span></button><button class="key" onclick="addNum(8)"><span class="num">8</span></button><button class="key" onclick="addNum(9)"><span class="num">9</span></button>
-<button class="key special" onclick="resetAll()"><span class="num">↻</span><span class="letters">RISET DATA</span></button>
-<button class="key" onclick="addNum(0)"><span class="num">0</span><span class="letters"></span></button>
-<button class="key special" onclick="backspace()"><span class="num">⌫</span><span class="letters">HAPUS</span></button>
-</div>
-</section>
-<section class="card" id="displayCard">
-<h2 class="title">MEJA YANG DIPANGGIL</h2>
-<div class="display"><div class="display-label">NOMOR MEJA</div><div id="displayNumber" class="display-number">—</div><div id="displayText" class="display-text">Silakan menunggu pemanggilan meja</div></div>
-<div class="history-title"><h3>Riwayat Panggilan</h3><span id="count" class="status">0 panggilan</span></div>
-<div id="history" class="history-list"></div>
-</section>
-</main></div>
-<div id="toast" class="toast"></div>
-<script>
-const input=document.getElementById('tableInput'),displayNumber=document.getElementById('displayNumber'),displayText=document.getElementById('displayText'),historyEl=document.getElementById('history'),displayCard=document.getElementById('displayCard'),toast=document.getElementById('toast');
-let current=localStorage.getItem('currentTable')||null,history=JSON.parse(localStorage.getItem('tableHistory')||'[]');
-function save(){localStorage.setItem('tableHistory',JSON.stringify(history));if(current)localStorage.setItem('currentTable',current);render()}
-function render(){displayNumber.textContent=current||'—';displayText.textContent=current?'silakan ambil pesanan Anda.':'Silakan menunggu pemanggilan meja';document.getElementById('count').textContent=history.length+' panggilan';historyEl.innerHTML=history.length?history.map(x=>`<div class="row"><b>MEJA ${x}</b><span class="badge">✓ DIPANGGIL</span></div>`).join(''):'<div class="empty">Belum ada riwayat panggilan.</div>'}
-function addNum(n){if(input.value.length>=3)return;input.value+=n}function backspace(){input.value=input.value.slice(0,-1)}
-function showToast(text){toast.textContent=text;toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),1800)}
-function playDoorbell(){
-try{const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;const ctx=new AC();if(ctx.state==='suspended')ctx.resume();
-const tone=(base,delay,duration)=>{const t=ctx.currentTime+delay,master=ctx.createGain(),comp=ctx.createDynamicsCompressor();comp.threshold.setValueAtTime(-12,t);comp.knee.setValueAtTime(5,t);comp.ratio.setValueAtTime(12,t);comp.attack.setValueAtTime(.002,t);comp.release.setValueAtTime(.12,t);
-master.gain.setValueAtTime(.0001,t);master.gain.exponentialRampToValueAtTime(2.5,t+.006);master.gain.exponentialRampToValueAtTime(1.2,t+.10);master.gain.exponentialRampToValueAtTime(.55,t+.32);master.gain.exponentialRampToValueAtTime(.0001,t+duration);master.connect(comp);comp.connect(ctx.destination);
-[[1,.90],[2.01,.38],[3.02,.18],[4.05,.09],[5.08,.04]].forEach(([r,a])=>{const o=ctx.createOscillator(),g=ctx.createGain();o.type='sine';o.frequency.setValueAtTime(base*r,t);g.gain.setValueAtTime(a,t);o.connect(g);g.connect(master);o.start(t);o.stop(t+duration+.08)})};
-tone(1046.5,0,.78);tone(783.99,.28,1.05)}catch(e){console.log(e)}}
-/*
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,maximum-scale=1"
+    />
+    <meta name="theme-color" content="#000000" />
+    <title>SMPTRU</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #fff1f7 0%, #eef6ff 100%);
+        color: #172554;
+      }
+      body {
+        display: flex;
+        justify-content: center;
+      }
+      .app {
+        width: 100%;
+        max-width: 1100px;
+        min-height: 100vh;
+        background: linear-gradient(135deg, #fff7fb 0%, #f2f8ff 100%);
+      }
+      header {
+        padding: 18px 22px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 2px solid #dbeafe;
+        background: linear-gradient(90deg, #ec4899, #3b82f6);
+        color: #fff;
+      }
+      .logo {
+        font-size: 20px;
+        font-weight: 800;
+      }
+      .status {
+        font-size: 12px;
+        color: #64748b;
+      }
+      header .status {
+        color: #e0f2fe;
+      }
+      main {
+        display: grid;
+        grid-template-columns: 1fr 1.15fr;
+        gap: 18px;
+        padding: 18px;
+      }
+      .card {
+        background: rgba(255, 255, 255, 0.96);
+        border: 1px solid #bfdbfe;
+        border-radius: 22px;
+        padding: 20px;
+        box-shadow: 0 10px 30px rgba(59, 130, 246, 0.1);
+      }
+      .card:first-child {
+        border-top: 5px solid #ec4899;
+      }
+      .card:last-child {
+        border-top: 5px solid #3b82f6;
+      }
+      .title {
+        text-align: center;
+        margin: 0 0 16px;
+        font-size: 19px;
+        color: #1e3a8a;
+      }
+      input {
+        width: 100%;
+        height: 68px;
+        background: #fff;
+        border: 2px solid #93c5fd;
+        border-radius: 16px;
+        color: #172554;
+        text-align: center;
+        font-size: 38px;
+        font-weight: 700;
+        outline: none;
+        transition: 0.2s;
+      }
+      input:focus {
+        border-color: #ec4899;
+        box-shadow: 0 0 0 4px rgba(236, 72, 153, 0.12);
+      }
+      input::placeholder {
+        color: #94a3b8;
+        font-size: 18px;
+      }
+      .actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-top: 12px;
+      }
+      button {
+        font: inherit;
+        border: 0;
+        border-radius: 14px;
+        padding: 13px;
+        cursor: pointer;
+        font-weight: 700;
+        -webkit-tap-highlight-color: transparent;
+        transition: 0.18s;
+      }
+      button:hover {
+        transform: translateY(-1px);
+        filter: brightness(1.02);
+      }
+      button:active {
+        transform: scale(0.97);
+      }
+      .actions button {
+        height: 82px;
+      }
+      .call {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        color: #fff;
+        box-shadow: 0 6px 14px rgba(37, 99, 235, 0.22);
+      }
+      .repeat {
+        background: #fce7f3;
+        color: #be185d;
+        border: 1px solid #f9a8d4;
+      }
+      .extra {
+        background: linear-gradient(135deg, #ec4899, #db2777);
+        color: #fff;
+        grid-column: 1/-1;
+        height: 64px !important;
+        box-shadow: 0 6px 14px rgba(236, 72, 153, 0.2);
+      }
+      .keypad {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 7px;
+        margin-top: 15px;
+      }
+      .key {
+        height: 94px;
+        background: linear-gradient(145deg, #eff6ff, #fdf2f8);
+        color: #1e3a8a;
+        border: 1px solid #dbeafe;
+        border-radius: 18px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      .key:hover {
+        background: linear-gradient(145deg, #dbeafe, #fce7f3);
+      }
+      .key:active {
+        transform: scale(0.95);
+        background: #fbcfe8;
+      }
+      .num {
+        font-size: 43px;
+        font-weight: 400;
+        line-height: 43px;
+      }
+      .letters {
+        font-size: 14px;
+        color: #64748b;
+        margin-top: 3px;
+        letter-spacing: 1px;
+        min-height: 16px;
+      }
+      .special .num {
+        font-size: 39px;
+      }
+      .display {
+        background: linear-gradient(145deg, #eff6ff, #fdf2f8);
+        border: 2px solid #bfdbfe;
+        border-radius: 20px;
+        text-align: center;
+        padding: 25px 15px;
+        margin-bottom: 18px;
+      }
+      .display-label {
+        color: #64748b;
+        font-size: 13px;
+      }
+      .display-number {
+        font-size: 105px;
+        line-height: 1;
+        font-weight: 800;
+        margin: 10px 0;
+        background: linear-gradient(90deg, #ec4899, #2563eb);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      .display-text {
+        color: #475569;
+        min-height: 20px;
+      }
+      .history-title {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .history-title h3 {
+        margin: 0;
+        color: #1e3a8a;
+      }
+      .history-list {
+        max-height: 300px;
+        overflow: auto;
+        margin-top: 8px;
+      }
+      .row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 13px 8px;
+        border-bottom: 1px solid #e0e7ff;
+      }
+      .badge {
+        font-size: 11px;
+        color: #2563eb;
+      }
+      .empty {
+        color: #94a3b8;
+        text-align: center;
+        padding: 20px;
+      }
+      .flash {
+        animation: flash 0.5s ease 2;
+      }
+      @keyframes flash {
+        50% {
+          background: #fce7f3;
+          box-shadow: 0 0 0 6px rgba(236, 72, 153, 0.12);
+        }
+      }
+      .toast {
+        position: fixed;
+        left: 50%;
+        bottom: 22px;
+        transform: translateX(-50%) translateY(20px);
+        background: linear-gradient(90deg, #ec4899, #2563eb);
+        color: #fff;
+        padding: 12px 18px;
+        border-radius: 99px;
+        font-weight: 700;
+        opacity: 0;
+        pointer-events: none;
+        transition: 0.25s;
+        z-index: 5;
+        box-shadow: 0 8px 20px rgba(30, 64, 175, 0.25);
+      }
+      .toast.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+      .theme-toggle {
+        min-width: 118px;
+        height: 44px;
+        padding: 8px 14px;
+        border: 1px solid rgba(255, 255, 255, 0.65);
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.16);
+        color: #fff;
+        font-weight: 700;
+        font-size: 13px;
+        backdrop-filter: blur(6px);
+      }
+
+      /* dark mode tetap tersedia, dengan aksen pink + biru */
+      body.dark-mode,
+      body.dark-mode .app {
+        background: linear-gradient(135deg, #111827 0%, #172554 100%);
+        color: #f3f4f6;
+      }
+      body.dark-mode header {
+        border-bottom-color: #374151;
+        background: linear-gradient(90deg, #be185d, #1d4ed8);
+      }
+      body.dark-mode .status {
+        color: #cbd5e1;
+      }
+      body.dark-mode .card {
+        background: #1f2937;
+        border-color: #334155;
+      }
+      body.dark-mode .title,
+      body.dark-mode .history-title h3 {
+        color: #bfdbfe;
+      }
+      body.dark-mode input {
+        background: #111827;
+        border-color: #475569;
+        color: #f3f4f6;
+      }
+      body.dark-mode input:focus {
+        border-color: #f472b6;
+        box-shadow: 0 0 0 4px rgba(244, 114, 182, 0.14);
+      }
+      body.dark-mode input::placeholder {
+        color: #94a3b8;
+      }
+      body.dark-mode .repeat {
+        background: #4c1d35;
+        color: #fbcfe8;
+        border-color: #9d174d;
+      }
+      body.dark-mode .key {
+        background: linear-gradient(145deg, #1e293b, #312e3b);
+        color: #dbeafe;
+        border-color: #475569;
+      }
+      body.dark-mode .key:hover {
+        background: linear-gradient(145deg, #1e3a8a, #831843);
+      }
+      body.dark-mode .letters {
+        color: #94a3b8;
+      }
+      body.dark-mode .display {
+        background: linear-gradient(145deg, #172554, #3b1730);
+        border-color: #475569;
+      }
+      body.dark-mode .display-label,
+      body.dark-mode .display-text {
+        color: #cbd5e1;
+      }
+      body.dark-mode .row {
+        border-bottom-color: #334155;
+      }
+      body.dark-mode .empty {
+        color: #94a3b8;
+      }
+      body.dark-mode .theme-toggle {
+        background: rgba(255, 255, 255, 0.12);
+        border-color: #64748b;
+        color: #f9fafb;
+      }
+
+      @media (max-width: 750px) {
+        main {
+          grid-template-columns: 1fr;
+          padding: 10px;
+        }
+        header {
+          padding: 15px;
+        }
+        .card {
+          padding: 15px;
+        }
+        .display-number {
+          font-size: 82px;
+        }
+        .key {
+          height: 82px;
+        }
+        .num {
+          font-size: 38px;
+        }
+        .theme-toggle {
+          min-width: 104px;
+          height: 40px;
+          font-size: 12px;
+          padding: 7px 10px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <header>
+        <div><div class="logo">🔔 SMPTRU JOS JIS</div></div>
+        <button
+          id="themeToggle"
+          class="theme-toggle"
+          type="button"
+          onclick="toggleTheme()"
+        >
+          🌙 DARK
+        </button>
+      </header>
+      <main>
+        <section class="card">
+          <h2 class="title">GAK ADA GEBRAKAN, KITA GEBRAKIN😋</h2>
+          <input
+            id="tableInput"
+            type="text"
+            inputmode="numeric"
+            maxlength="3"
+            placeholder="Masukkan Nomor Meja"
+            autocomplete="off"
+          />
+          <div class="actions">
+            <button class="repeat" onclick="repeatCall()">
+              ↻ PANGGIL ULANG
+            </button>
+            <button class="call" onclick="callTable()">🔔 PANGGIL MEJA</button>
+            <button class="extra" onclick="extraMenuCall()">
+              🍽️ TAMBAHAN MENU
+            </button>
+          </div>
+          <div class="keypad">
+            <button class="key" onclick="addNum(1)">
+              <span class="num">1</span></button
+            ><button class="key" onclick="addNum(2)">
+              <span class="num">2</span></button
+            ><button class="key" onclick="addNum(3)">
+              <span class="num">3</span>
+            </button>
+            <button class="key" onclick="addNum(4)">
+              <span class="num">4</span></button
+            ><button class="key" onclick="addNum(5)">
+              <span class="num">5</span></button
+            ><button class="key" onclick="addNum(6)">
+              <span class="num">6</span>
+            </button>
+            <button class="key" onclick="addNum(7)">
+              <span class="num">7</span></button
+            ><button class="key" onclick="addNum(8)">
+              <span class="num">8</span></button
+            ><button class="key" onclick="addNum(9)">
+              <span class="num">9</span>
+            </button>
+            <button class="key special" onclick="resetAll()">
+              <span class="num">↻</span><span class="letters">RISET DATA</span>
+            </button>
+            <button class="key" onclick="addNum(0)">
+              <span class="num">0</span><span class="letters"></span>
+            </button>
+            <button class="key special" onclick="backspace()">
+              <span class="num">⌫</span><span class="letters">HAPUS</span>
+            </button>
+          </div>
+        </section>
+        <section class="card" id="displayCard">
+          <h2 class="title">MEJA YANG DIPANGGIL</h2>
+          <div class="display">
+            <div class="display-label">NOMOR MEJA</div>
+            <div id="displayNumber" class="display-number">—</div>
+            <div id="displayText" class="display-text">
+              Silakan menunggu pemanggilan meja
+            </div>
+          </div>
+          <div class="history-title">
+            <h3>Riwayat Panggilan</h3>
+            <span id="count" class="status">0 panggilan</span>
+          </div>
+          <div id="history" class="history-list"></div>
+        </section>
+      </main>
+    </div>
+    <div id="toast" class="toast"></div>
+    <script>
+      const input = document.getElementById("tableInput"),
+        displayNumber = document.getElementById("displayNumber"),
+        displayText = document.getElementById("displayText"),
+        historyEl = document.getElementById("history"),
+        displayCard = document.getElementById("displayCard"),
+        toast = document.getElementById("toast");
+      let current = localStorage.getItem("currentTable") || null,
+        history = JSON.parse(localStorage.getItem("tableHistory") || "[]");
+      function save() {
+        localStorage.setItem("tableHistory", JSON.stringify(history));
+        if (current) localStorage.setItem("currentTable", current);
+        render();
+      }
+      function render() {
+        displayNumber.textContent = current || "—";
+        displayText.textContent = current
+          ? "silakan ambil pesanan Anda."
+          : "Silakan menunggu pemanggilan meja";
+        document.getElementById("count").textContent =
+          history.length + " panggilan";
+        historyEl.innerHTML = history.length
+          ? history
+              .map(
+                (x) =>
+                  `<div class="row"><b>MEJA ${x}</b><span class="badge">✓ DIPANGGIL</span></div>`,
+              )
+              .join("")
+          : '<div class="empty">Belum ada riwayat panggilan.</div>';
+      }
+      function addNum(n) {
+        if (input.value.length >= 3) return;
+        input.value += n;
+      }
+      function backspace() {
+        input.value = input.value.slice(0, -1);
+      }
+      function showToast(text) {
+        toast.textContent = text;
+        toast.classList.add("show");
+        setTimeout(() => toast.classList.remove("show"), 1800);
+      }
+      function playDoorbell() {
+        try {
+          const AC = window.AudioContext || window.webkitAudioContext;
+          if (!AC) return;
+          const ctx = new AC();
+          if (ctx.state === "suspended") ctx.resume();
+          const tone = (base, delay, duration) => {
+            const t = ctx.currentTime + delay,
+              master = ctx.createGain(),
+              comp = ctx.createDynamicsCompressor();
+            comp.threshold.setValueAtTime(-12, t);
+            comp.knee.setValueAtTime(5, t);
+            comp.ratio.setValueAtTime(12, t);
+            comp.attack.setValueAtTime(0.002, t);
+            comp.release.setValueAtTime(0.12, t);
+            master.gain.setValueAtTime(0.0001, t);
+            master.gain.exponentialRampToValueAtTime(2.5, t + 0.006);
+            master.gain.exponentialRampToValueAtTime(1.2, t + 0.1);
+            master.gain.exponentialRampToValueAtTime(0.55, t + 0.32);
+            master.gain.exponentialRampToValueAtTime(0.0001, t + duration);
+            master.connect(comp);
+            comp.connect(ctx.destination);
+            [
+              [1, 0.9],
+              [2.01, 0.38],
+              [3.02, 0.18],
+              [4.05, 0.09],
+              [5.08, 0.04],
+            ].forEach(([r, a]) => {
+              const o = ctx.createOscillator(),
+                g = ctx.createGain();
+              o.type = "sine";
+              o.frequency.setValueAtTime(base * r, t);
+              g.gain.setValueAtTime(a, t);
+              o.connect(g);
+              g.connect(master);
+              o.start(t);
+              o.stop(t + duration + 0.08);
+            });
+          };
+          tone(1046.5, 0, 0.78);
+          tone(783.99, 0.28, 1.05);
+        } catch (e) {
+          console.log(e);
+        }
+      }
+      /*
   SUARA KONSISTEN ANTAR DEVICE
   Browser tidak mengizinkan website mengunci voice bawaan perangkat.
   Karena itu, suara teks diatur dengan parameter tetap dan memilih voice
   Bahasa Indonesia secara konsisten jika tersedia.
 */
-let selectedVoice = null;
+      let selectedVoice = null;
 
-function loadIndonesianVoice(){
-  if(!('speechSynthesis' in window)) return;
-  const voices = speechSynthesis.getVoices();
-  selectedVoice =
-    voices.find(v => v.lang && v.lang.toLowerCase() === 'id-id') ||
-    voices.find(v => v.lang && v.lang.toLowerCase().startsWith('id')) ||
-    null;
-}
+      function loadIndonesianVoice() {
+        if (!("speechSynthesis" in window)) return;
+        const voices = speechSynthesis.getVoices();
+        selectedVoice =
+          voices.find((v) => v.lang && v.lang.toLowerCase() === "id-id") ||
+          voices.find((v) => v.lang && v.lang.toLowerCase().startsWith("id")) ||
+          null;
+      }
 
-if('speechSynthesis' in window){
-  loadIndonesianVoice();
-  speechSynthesis.onvoiceschanged = loadIndonesianVoice;
-}
+      if ("speechSynthesis" in window) {
+        loadIndonesianVoice();
+        speechSynthesis.onvoiceschanged = loadIndonesianVoice;
+      }
 
-function speakText(text, speed=.8){
-  if(!('speechSynthesis' in window)){
-    showToast('Browser tidak mendukung suara otomatis');
-    return;
-  }
+      function speakText(text, speed = 0.8) {
+        if (!("speechSynthesis" in window)) {
+          showToast("Browser tidak mendukung suara otomatis");
+          return;
+        }
 
-  speechSynthesis.cancel();
+        speechSynthesis.cancel();
 
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = 'id-ID';
-  u.rate = speed;
-  u.pitch = 1;
-  u.volume = 1;
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = "id-ID";
+        u.rate = speed;
+        u.pitch = 1;
+        u.volume = 1;
 
-  // Gunakan voice Indonesia yang tersedia di device.
-  // Jika voice tidak tersedia, browser memakai voice default untuk id-ID.
-  if(!selectedVoice) loadIndonesianVoice();
-  if(selectedVoice) u.voice = selectedVoice;
+        // Gunakan voice Indonesia yang tersedia di device.
+        // Jika voice tidak tersedia, browser memakai voice default untuk id-ID.
+        if (!selectedVoice) loadIndonesianVoice();
+        if (selectedVoice) u.voice = selectedVoice;
 
-  setTimeout(() => speechSynthesis.speak(u), 950);
-}
+        setTimeout(() => speechSynthesis.speak(u), 950);
+      }
 
-function speak(n){
-  playDoorbell();
-  speakText('Nomor meja', 1.2);
-  setTimeout(() => speakText(`${n}`, .8), 700);
-}
-function extraMenuCall(){const typed=parseInt(input.value,10),n=typed&&typed>=1&&typed<=80?String(typed):current;if(!n){showToast('Masukkan nomor meja terlebih dahulu');return}if(typed){current=n;localStorage.setItem('currentTable',current);render();input.value=''}playDoorbell();speakText(`Tambahan meja ${n}.`);showToast('Tambahan meja '+n)}
-let closeOrderLastAlert=localStorage.getItem('closeOrderLastAlert')||'';
-function closeOrderAlert(){const now=new Date(),hh=now.getHours(),mm=now.getMinutes(),today=`${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`;if(hh===22&&mm===55&&closeOrderLastAlert!==today){closeOrderLastAlert=today;localStorage.setItem('closeOrderLastAlert',today);const text='Perhatian!!, kepada seluruh pelanggan mie gacoan sumenep, 5 menit lagi waktu pemesanan akan ditutup. Harap segera melakukan pembayaran atas pesanan Anda. Terima kasih';showToast('⚠️ 5 MENIT LAGI CLOSE ORDER');playDoorbell();setTimeout(()=>{if('speechSynthesis'in window){speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='id-ID';u.rate=1;u.pitch=1;u.volume=1;speechSynthesis.speak(u)}},950)}}
-setInterval(closeOrderAlert,1000);closeOrderAlert();
-function callTable(){const n=parseInt(input.value,10);if(!n||n<1||n>80){showToast('Masukkan nomor meja 1 - 80');return}current=String(n);history=[current,...history.filter(x=>x!==current)].slice(0,30);save();displayCard.classList.remove('flash');void displayCard.offsetWidth;displayCard.classList.add('flash');showToast('Memanggil meja '+current);speak(current);input.value=''}
-function repeatCall(){if(!current){showToast('Belum ada meja yang dipanggil');return}speak(current);showToast('Panggilan ulang meja '+current)}
-function resetAll(){if(!confirm('Hapus nomor aktif dan seluruh riwayat?'))return;current=null;history=[];localStorage.removeItem('currentTable');localStorage.removeItem('tableHistory');input.value='';render();showToast('Data telah direset')}
-input.addEventListener('keydown',e=>{if(e.key==='Enter')callTable()});render();
-(function(){const saved=localStorage.getItem('smptruTheme');if(saved==='dark')document.body.classList.add('dark-mode');window.updateThemeButton=function(){const b=document.getElementById('themeToggle'),dark=document.body.classList.contains('dark-mode');b.textContent=dark?'☀️ TERANG':'🌙 DARK'};window.toggleTheme=function(){document.body.classList.toggle('dark-mode');localStorage.setItem('smptruTheme',document.body.classList.contains('dark-mode')?'dark':'light');updateThemeButton()};updateThemeButton()})();
-</script>
-</body>
+      function speak(n) {
+        playDoorbell();
+        speakText("Nomor meja", 1.2);
+        setTimeout(() => speakText(`${n}`, 0.8), 700);
+      }
+      function extraMenuCall() {
+        const typed = parseInt(input.value, 10),
+          n = typed && typed >= 1 && typed <= 80 ? String(typed) : current;
+        if (!n) {
+          showToast("Masukkan nomor meja terlebih dahulu");
+          return;
+        }
+        if (typed) {
+          current = n;
+          localStorage.setItem("currentTable", current);
+          render();
+          input.value = "";
+        }
+        playDoorbell();
+        speakText(`Tambahan meja ${n}.`);
+        showToast("Tambahan meja " + n);
+      }
+      let closeOrderLastAlert =
+        localStorage.getItem("closeOrderLastAlert") || "";
+      function closeOrderAlert() {
+        const now = new Date(),
+          hh = now.getHours(),
+          mm = now.getMinutes(),
+          today = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
+        if (hh === 22 && mm === 55 && closeOrderLastAlert !== today) {
+          closeOrderLastAlert = today;
+          localStorage.setItem("closeOrderLastAlert", today);
+          const text =
+            "Perhatian!!, kepada seluruh pelanggan mie gacoan sumenep, 5 menit lagi waktu pemesanan akan ditutup. Harap segera melakukan pembayaran atas pesanan Anda. Terima kasih";
+          showToast("⚠️ 5 MENIT LAGI CLOSE ORDER");
+          playDoorbell();
+          setTimeout(() => {
+            if ("speechSynthesis" in window) {
+              speechSynthesis.cancel();
+              const u = new SpeechSynthesisUtterance(text);
+              u.lang = "id-ID";
+              u.rate = 1;
+              u.pitch = 1;
+              u.volume = 1;
+              speechSynthesis.speak(u);
+            }
+          }, 950);
+        }
+      }
+      setInterval(closeOrderAlert, 1000);
+      closeOrderAlert();
+      function callTable() {
+        const n = parseInt(input.value, 10);
+        if (!n || n < 1 || n > 80) {
+          showToast("Masukkan nomor meja 1 - 80");
+          return;
+        }
+        current = String(n);
+        history = [current, ...history.filter((x) => x !== current)].slice(
+          0,
+          30,
+        );
+        save();
+        displayCard.classList.remove("flash");
+        void displayCard.offsetWidth;
+        displayCard.classList.add("flash");
+        showToast("Memanggil meja " + current);
+        speak(current);
+        input.value = "";
+      }
+      function repeatCall() {
+        if (!current) {
+          showToast("Belum ada meja yang dipanggil");
+          return;
+        }
+        speak(current);
+        showToast("Panggilan ulang meja " + current);
+      }
+      function resetAll() {
+        if (!confirm("Hapus nomor aktif dan seluruh riwayat?")) return;
+        current = null;
+        history = [];
+        localStorage.removeItem("currentTable");
+        localStorage.removeItem("tableHistory");
+        input.value = "";
+        render();
+        showToast("Data telah direset");
+      }
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") callTable();
+      });
+      render();
+      (function () {
+        const saved = localStorage.getItem("smptruTheme");
+        if (saved === "dark") document.body.classList.add("dark-mode");
+        window.updateThemeButton = function () {
+          const b = document.getElementById("themeToggle"),
+            dark = document.body.classList.contains("dark-mode");
+          b.textContent = dark ? "☀️ TERANG" : "🌙 DARK";
+        };
+        window.toggleTheme = function () {
+          document.body.classList.toggle("dark-mode");
+          localStorage.setItem(
+            "smptruTheme",
+            document.body.classList.contains("dark-mode") ? "dark" : "light",
+          );
+          updateThemeButton();
+        };
+        updateThemeButton();
+      })();
+    </script>
+  </body>
 </html>
